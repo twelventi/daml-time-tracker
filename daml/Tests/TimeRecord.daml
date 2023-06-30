@@ -1,3 +1,5 @@
+-- A Daml script that does some testing of the templates.
+
 {-# LANGUAGE ApplicativeDo #-}
 
 module Tests.TimeRecord where
@@ -26,7 +28,7 @@ test = do
 
     -- TEST creating a record
     timeRecord1 <- submit user1 do
-        exerciseCmd userContract1 Create with
+        exerciseCmd userContract1 CreateTimeRecord with
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
             end = ( time ( date 2023 Jun 01 ) 4 0 0 )
@@ -50,7 +52,7 @@ test = do
 
     -- TEST record fails when starttime is before end time
     submitMustFail user1 do
-        exerciseCmd userContract1 Create with
+        exerciseCmd userContract1 CreateTimeRecord with
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 4 0 0 )
             end = ( time ( date 2023 Jun 01 ) 0 0 0 )
@@ -59,7 +61,7 @@ test = do
 
     -- TEST creating and updating a record
     timeRecord2 <-  submit user1 do
-        exerciseCmd userContract1 Create with
+        exerciseCmd userContract1 CreateTimeRecord with
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
             end = ( time ( date 2023 Jun 01 ) 4 0 0 )
@@ -81,7 +83,7 @@ test = do
 
     --update a time record
     updatedTimeRecord2 <- submit user1 do
-        exerciseCmd userContract1 UpdateRecord with
+        exerciseCmd userContract1 UpdateTimeRecord with
             id = timeRecord2
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
@@ -106,14 +108,14 @@ test = do
 
     -- TEST Deleting a record
     timeRecord3 <-  submit user1 do
-        exerciseCmd userContract1 Create with
+        exerciseCmd userContract1 CreateTimeRecord with
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
             end = ( time ( date 2023 Jun 01 ) 4 0 0 )
             proj = "project1"    
 
     submit user1 do
-        exerciseCmd userContract1 Delete with
+        exerciseCmd userContract1 DeleteTimeRecord with
             id = timeRecord3
 
     contractTimeRecord3 <- 

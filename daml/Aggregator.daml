@@ -1,0 +1,16 @@
+
+---Write a Daml contract that can be used to store a summary of the times (all time logged),
+-- and write scripts that can produce these for a day, a week, a month, a year, a project and to date
+
+module Aggregator where
+
+import Time
+
+template TimeAggregator with
+    timeRecordIds: [ContractId TimeRecord] 
+    totalHours: Decimal
+    startDate: Time
+    endDate: Time
+    user: Party
+  where
+    signatory user

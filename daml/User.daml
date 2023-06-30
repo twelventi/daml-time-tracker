@@ -2,9 +2,17 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 
+-- Daml model that implements, creation, update and deletion of the representation of time spent. Required data to be stored:
+
+--     Description
+--     Start (date)time
+--     End (date)time
+--     A project identifier to allow higher level organization.
+
 module User where
 
 import Time
+import Aggregator
 
 -- MAIN_TEMPLATE_BEGIN
 template User with
@@ -18,7 +26,7 @@ template User with
     key username: Party
     maintainer key    
 
-    nonconsuming choice Create: ContractId TimeRecord with
+    nonconsuming choice CreateTimeRecord: ContractId TimeRecord with
         desc: Text
         start: Time
         end: Time
@@ -33,7 +41,7 @@ template User with
             project = proj
             user = username
 
-    nonconsuming choice UpdateRecord: ContractId TimeRecord with
+    nonconsuming choice UpdateTimeRecord: ContractId TimeRecord with
         id: ContractId TimeRecord --maybe should use my own ID so an "update" doesn't just make a random new contract ID
         desc: Text
         start: Time
@@ -50,30 +58,8 @@ template User with
             project = proj
             user = username
 
-    nonconsuming choice Delete: () with
+    nonconsuming choice DeleteTimeRecord: () with
         id: ContractId TimeRecord
       controller username
       do
         archive id
-    
-
--- -- ALIAS_BEGIN
--- template Alias with
---     username: Party
---     alias: Text
---     public: Party
---   where
---     signatory username
---     observer public
-
---     key (username, public) : (Party, Party)
---     maintainer key._1 --key._1 refers to the public parameter
-
---     --updates the name of the an alias
---     nonconsuming choice Change: ContractId Alias with
---         newAlias: Text
---       controller username
---       do
---         archive self
---         create this with alias = newAlias
--- -- ALIAS_END
