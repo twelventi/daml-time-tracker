@@ -3,7 +3,6 @@
 module Tests.TimeRecord where
 
 import Daml.Script
-import DA.Optional
 import DA.Time
 import DA.Date
 
@@ -15,8 +14,8 @@ data Parties = Parties
   with
     user1 : Party
 
-setup: Script ()
-setup = do
+test: Script ()
+test = do
     user1 <- allocateParty "user1"
     user1Id <- validateUserId "user1"
     createUser (Daml.Script.User user1Id ( Some user1)) [CanActAs user1]
@@ -26,17 +25,28 @@ setup = do
         createCmd ( User.User user1 )
 
     -- TEST creating a record
-    testRecord1 <- submit user1 do
+    timeRecord1 <- submit user1 do
         exerciseCmd userContract1 Create with
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
             end = ( time ( date 2023 Jun 01 ) 4 0 0 )
             proj = "project1"    
 
-    contractRecord1 <-
-        queryContractId @TimeRecord user1 testRecord1
+    contractTimeRecord1 <-
+        queryContractId @TimeRecord user1 timeRecord1
 
-    assert (DA.Optional.isSome contractRecord1) 
+    -- assert the fields have been populated  correctly
+    case contractTimeRecord1 of
+        Some contract -> 
+            do
+            assert (contract.description == "this is the first record")
+            assert (contract.startDate == ( time ( date 2023 Jun 01 ) 0 0 0 ))
+            assert (contract.endDate == ( time ( date 2023 Jun 01 ) 4 0 0 ))
+            assert (contract.project == "project1")
+        None ->
+            assert (False)
+    -- END TEST creating a record
+
 
     -- TEST record fails when starttime is before end time
     submitMustFail user1 do
@@ -45,34 +55,76 @@ setup = do
             start = ( time ( date 2023 Jun 01 ) 4 0 0 )
             end = ( time ( date 2023 Jun 01 ) 0 0 0 )
             proj = "project1"    
+    -- END TEST record fails when starttime is before end time
 
-
-
-    -- TEST creating updating a record
-    timeRecord1 <-  submit user1 do
+    -- TEST creating and updating a record
+    timeRecord2 <-  submit user1 do
         exerciseCmd userContract1 Create with
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
             end = ( time ( date 2023 Jun 01 ) 4 0 0 )
             proj = "project1"    
 
+    contractTimeRecord2 <- 
+        queryContractId @TimeRecord user1 timeRecord2
+
+    -- assert the fields have been populated  correctly
+    case contractTimeRecord2 of
+        Some contract -> 
+            do
+            assert (contract.description == "this is the first record")
+            assert (contract.startDate == ( time ( date 2023 Jun 01 ) 0 0 0 ))
+            assert (contract.endDate == ( time ( date 2023 Jun 01 ) 4 0 0 ))
+            assert (contract.project == "project1")
+        None ->
+            assert (False)
+
     --update a time record
-    submit user1 do
+    updatedTimeRecord2 <- submit user1 do
         exerciseCmd userContract1 UpdateRecord with
-            id = timeRecord1
+            id = timeRecord2
             desc = "this is the first record"
             start = ( time ( date 2023 Jun 01 ) 0 0 0 )
-            end = ( time ( date 2023 Jun 01 ) 0 5 0 )
+            end = ( time ( date 2023 Jun 01 ) 5 0 0 )
             proj = "project1"
-        
-
-
-    -- --create a time record
-    -- timeRecord1 <- submit user1 do
-    --     exerciseCmd userContract1 Create with
-    --         desc = "this is the second record"
-    --         start = ( time ( date 2023 Jun 01 ) 0 0 0 )
-    --         end = ( time ( date 2023 Jun 01 ) 4 0 0 )
-    --         proj = "project1"    
     
+    contractUpdatedTimeRecord2 <- 
+        queryContractId @TimeRecord user1 updatedTimeRecord2
+
+    -- assert the fields have been populated  correctly
+    case contractUpdatedTimeRecord2 of
+        Some contract -> 
+            do
+            assert (contract.description == "this is the first record")
+            assert (contract.startDate == ( time ( date 2023 Jun 01 ) 0 0 0 ))
+            assert (contract.endDate == ( time ( date 2023 Jun 01 ) 5 0 0 ))
+            assert (contract.project == "project1")
+        None ->
+            assert (False)
+
+    -- END TEST creating and updating a record
+
+    -- TEST Deleting a record
+    timeRecord3 <-  submit user1 do
+        exerciseCmd userContract1 Create with
+            desc = "this is the first record"
+            start = ( time ( date 2023 Jun 01 ) 0 0 0 )
+            end = ( time ( date 2023 Jun 01 ) 4 0 0 )
+            proj = "project1"    
+
+    submit user1 do
+        exerciseCmd userContract1 Delete with
+            id = timeRecord3
+
+    contractTimeRecord3 <- 
+        queryContractId @TimeRecord user1 timeRecord3
+
+    -- assert the fields have been populated  correctly
+    case contractTimeRecord3 of
+        Some contract -> 
+            assert (False)
+        None ->
+            assert (True)
+    -- END TEST Deleting a record
+
     pure ()
