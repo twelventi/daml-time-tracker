@@ -1,0 +1,52 @@
+module Setup where
+
+
+import Daml.Script
+import DA.Time
+import DA.Date
+
+import User
+
+-- -- | A record containing all the parties that we will use in our script
+data Parties = Parties
+  with
+    user1 : Party
+
+setup: Script Parties
+setup = do
+    user1 <- allocateParty "user1"
+    user1Id <- validateUserId "user1"
+    createUser (Daml.Script.User user1Id ( Some user1)) [CanActAs user1]
+
+    --create the user contract
+    userContract1 <- submit user1 do
+        createCmd ( User.User user1 )
+
+    --create a time record
+    timeRecord1 <- submit user1 do
+        exerciseCmd userContract1 Create with
+            desc = "this is the first record"
+            start = ( time ( date 2023 Jun 01 ) 0 0 0 )
+            end = ( time ( date 2023 Jun 01 ) 0 4 0 )
+            proj = "project1"    
+
+    --update a time record
+    submit user1 do
+        exerciseCmd userContract1 UpdateRecord with
+            id = timeRecord1
+            desc = "this is the first record"
+            start = ( time ( date 2023 Jun 01 ) 0 0 0 )
+            end = ( time ( date 2023 Jun 01 ) 0 5 0 )
+            proj = "project1"
+        
+
+    --create a time record
+    submit user1 do
+        exerciseCmd userContract1 Create with
+            desc = "this is the second record"
+            start = ( time ( date 2023 Jun 01 ) 0 0 0 )
+            end = ( time ( date 2023 Jun 01 ) 4 0 0 )
+            proj = "project1"    
+
+    pure $ Parties with
+        user1

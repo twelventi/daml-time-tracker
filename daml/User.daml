@@ -1,0 +1,79 @@
+-- Copyright (c) 2022 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+
+module User where
+
+import Time
+
+-- MAIN_TEMPLATE_BEGIN
+template User with
+    -- this is a definition of the data types for this "schema", i.e. this object can have a username (which is a built-in daml type of 'Party' )
+    -- and a list of people this user is "following" (type of a list of Parties)
+    username: Party
+  where
+    signatory username --this allows the user to sign/change the data
+-- MAIN_TEMPLATE_END
+
+    key username: Party
+    maintainer key    
+
+    nonconsuming choice Create: ContractId TimeRecord with
+        desc: Text
+        start: Time
+        end: Time
+        proj: Text
+      controller username
+      do
+        assertMsg "Start time must be before end time" (start < end)
+        create TimeRecord with
+            description = desc
+            startDate = start
+            endDate = end
+            project = proj
+            user = username
+
+    nonconsuming choice UpdateRecord: ContractId TimeRecord with
+        id: ContractId TimeRecord --maybe should use my own ID so an "update" doesn't just make a random new contract ID
+        desc: Text
+        start: Time
+        end: Time
+        proj: Text
+      controller username
+      do
+        assertMsg "Start time must be before end time" (start < end)
+        archive id
+        create TimeRecord with
+            description = desc
+            startDate = start
+            endDate = end
+            project = proj
+            user = username
+
+    nonconsuming choice Delete: () with
+        id: ContractId TimeRecord
+      controller username
+      do
+        archive id
+    
+
+-- -- ALIAS_BEGIN
+-- template Alias with
+--     username: Party
+--     alias: Text
+--     public: Party
+--   where
+--     signatory username
+--     observer public
+
+--     key (username, public) : (Party, Party)
+--     maintainer key._1 --key._1 refers to the public parameter
+
+--     --updates the name of the an alias
+--     nonconsuming choice Change: ContractId Alias with
+--         newAlias: Text
+--       controller username
+--       do
+--         archive self
+--         create this with alias = newAlias
+-- -- ALIAS_END

@@ -1,0 +1,10 @@
+module Time where
+
+template TimeRecord with
+    description: Text
+    startDate: Time
+    endDate: Time
+    project: Text
+    user: Party
+  where
+    signatory user
