@@ -1,25 +1,19 @@
 module AggregatorScript where
 
--- import Time
--- import User
+import Time
+import User
 
--- import Daml.Script
--- import DA.Time
--- import DA.Date
--- -- for the purposes of this aggregation script, I'm going to assume
--- -- that the start and end days are the same and all time entries
--- -- exist on the same day
--- project: Party -> Text -> Script ()
--- project username projectId = do
-
---     allTimeRecords <- query @TimeRecord username 
-
-
---     let filteredTimeRecords = filter ( \record -> (date record.project) == projectId )  allTimeRecords
-  
-
-
---     pure ()
+import Daml.Script
+import DA.Time
+import DA.Date
+-- for the purposes of this aggregation script, I'm going to assume
+-- that the start and end days are the same and all time entries
+-- exist on the same day
+project: Party -> Text -> Script ()
+project username projectId = do
+    allTimeRecords <- query @TimeRecord username 
+    let filterRecords = filter ( \(cid: ContractId TimeRecord,record: TimeRecord) -> (record.project) == projectId ) allTimeRecords
+    pure ()
 
 --     -- nonconsuming choice All:
 
