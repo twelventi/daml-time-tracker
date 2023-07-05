@@ -8,7 +8,7 @@ import Time
 
 template TimeAggregator with
     timeRecordIds: [ContractId TimeRecord] 
-    totalHours: Decimal
+    totalSeconds: Decimal
     startDate: Time
     endDate: Time
     user: Party

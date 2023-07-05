@@ -2,31 +2,37 @@ module AggregatorScript where
 
 import Time
 import User
+import Aggregator
 
 import Daml.Script
 import DA.Time
 import DA.Date
+import DA.List
+import DA.Action
+
 -- for the purposes of this aggregation script, I'm going to assume
--- that the start and end days are the same and all time entries
+-- that all time entries
 -- exist on the same day
+
+--summary script
+
+-- hoursDiff: Time -> Time -> Int
+-- hoursDiff t1 t2 = do
+--     -- I can't figure out what the issue here is, attempting to make a function
+--     -- that finds the difference in seconds between two times, for the aggregator  
+--     -- function
+--     
+--     -- Couldn't match expected type ‘Int’ with actual type ‘Time -> Int’
+--     -- • In a stmt of a 'do' block: timeDifference <- subTime t1 - t2
+--     timeDifference <- subTime t1 t2
+--     timeDifference.seconds
+
 project: Party -> Text -> Script ()
 project username projectId = do
     allTimeRecords <- query @TimeRecord username 
-    let filterRecords = filter ( \(cid: ContractId TimeRecord,record: TimeRecord) -> (record.project) == projectId ) allTimeRecords
+    filteredRecords <- filterA ( \(cid: ContractId TimeRecord,record: TimeRecord) ->  pure (record.project == projectId ) ) allTimeRecords
+
+    totalHours <- foldlA (\acc (cid: ContractId TimeRecord,record: TimeRecord) -> pure (acc ) ) 0 filteredRecords
+
     pure ()
 
---     -- nonconsuming choice All:
-
-
-
-
-
---     -- nonconsuming choice Weekly:
-
---     -- nonconsuming choice Monthly:
-
---     -- nonconsuming choice Year:
-
---     -- nonconsuming choice Project
-
---     -- nonconsuming choice UpToDate

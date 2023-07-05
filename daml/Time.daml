@@ -1,5 +1,13 @@
 module Time where
 
+-- Daml model that implements, creation, update and deletion of the representation of time spent. Required data to be stored:
+
+--     Description
+--     Start (date)time
+--     End (date)time
+--     A project identifier to allow higher level organization.
+
+
 template TimeRecord with
     description: Text
     startDate: Time
@@ -8,3 +16,4 @@ template TimeRecord with
     user: Party
   where
     signatory user
+    
