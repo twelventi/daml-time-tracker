@@ -1,12 +1,8 @@
-# this file mirrors the functionality in the json api but uses the grpc api
+# this file mirrors some of the functionality in the json api but uses the grpc api
 
+# Do the same as in the previous task but against the Ledger API using grpcurl and/or Postman (a new version which supports gRPC).
 
-
-# Start a JSON API Server against your Ledger and Model and showcase how to use the api (dar upload, party allocation, contract creation and exercise) using the curl command and/or Postman.
-
-## Start the server with:
-# daml json-api --config json-api.conf
-
+# upload the dar file
 grpcurl -plaintext -d @ localhost:5011  com.daml.ledger.api.v1.admin.PackageManagementService/UploadDarFile << EOM
 {
     "dar_file": "$(cat '../.daml/dist/daml-time-tracker-0.1.0.dar' | base64 )"

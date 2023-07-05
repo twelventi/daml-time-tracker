@@ -2,6 +2,10 @@
 
 # daml-time-tracker
 
+This is a simple application showcasing the use of DAML to allow an end user to enter a record describing how much time they spent working on a specific task. It also has examples of how to directly query a canton network's JSON and GRPC apis
+
+# auto generated readme:
+
 See [documentation] for details.
 
 [documentation]: https://docs.daml.com/getting-started/installation.html

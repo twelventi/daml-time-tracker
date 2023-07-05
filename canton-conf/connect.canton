@@ -6,5 +6,6 @@ nodes.local.start()
 // The macro is convenient for local testing, but obviously doesn't work in a distributed setup.
 participant1.domains.connect_local(mydomain)
 
-//generate the config for the navigator
+//generate the config for the navigator, note this will have to be re-done after/if
+//you create a party with the api
 utils.generate_navigator_conf(participant1)
