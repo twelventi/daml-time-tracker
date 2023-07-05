@@ -34,19 +34,19 @@ PERMS=$( echo '{
 NEW_AUTH="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.$PERMS.HGiHsZL7m6wPUrKlaonQjd7gKZuKOwiDOFA40BSYV3g"
 
 # create a User contract to correspond with the user1 party
-curl -X POST http://localhost:5555/v1/create -H "Content-Type: application/json" -H "Authorization: Bearer $NEW_AUTH" -d '{"templateId" : "544d38add2033b86a0175aa916ea0875e4f62874e2065e5efe8ff25881a71b7e:User:User","payload":{"username": "'$USER'"}}'
+curl -X POST http://localhost:5555/v1/create -H "Content-Type: application/json" -H "Authorization: Bearer $NEW_AUTH" -d '{"templateId" : "5a8af51473a4f3502f793754099201c34f7573b7b3d7e375483479f6d5082744:User:User","payload":{"username": "'$USER'"}}'
 
 # get the ID of the contract
-CONTRACT_ID=$(curl -X GET http://localhost:5555/v1/query -H "Content-Type: application/json" -H "Authorization: Bearer $NEW_AUTH" -d '{"templateIds" : [ "544d38add2033b86a0175aa916ea0875e4f62874e2065e5efe8ff25881a71b7e:User:User" ]}' | jq .result[0].contractId | tr -d '"')
+CONTRACT_ID=$(curl -X GET http://localhost:5555/v1/query -H "Content-Type: application/json" -H "Authorization: Bearer $NEW_AUTH" -d '{"templateIds" : [ "5a8af51473a4f3502f793754099201c34f7573b7b3d7e375483479f6d5082744:User:User" ]}' | jq .result[0].contractId | tr -d '"')
 
 echo $CONTRACT_ID
 
 # create a time record 
 curl -X POST http://localhost:5555/v1/exercise -H "Content-Type: application/json" -H "Authorization: Bearer $NEW_AUTH" -d '
 {
-    "templateId" : "544d38add2033b86a0175aa916ea0875e4f62874e2065e5efe8ff25881a71b7e:User:User", 
+    "templateId" : "5a8af51473a4f3502f793754099201c34f7573b7b3d7e375483479f6d5082744:User:User", 
     "contractId":"'$CONTRACT_ID'", 
-    "choice": "Create", 
+    "choice": "CreateTimeRecord", 
     "argument": {
         "desc": "desc", 
         "proj":"project1",

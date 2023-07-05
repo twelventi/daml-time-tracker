@@ -10,7 +10,7 @@ grpcurl -plaintext -d @ localhost:5011  com.daml.ledger.api.v1.admin.PackageMana
 EOM
 
 #gets the party ID for the user object
-USER=$( grpcurl  -d '{"party_id_hint":"user1"}' -plaintext localhost:5011 com.daml.ledger.api.v1.admin.PartyManagementService.AllocateParty | jq .party_details.party | tr -d '"')
+USER=$( grpcurl  -d '{"party_id_hint":"user3"}' -plaintext localhost:5011 com.daml.ledger.api.v1.admin.PartyManagementService.AllocateParty | jq .party_details.party | tr -d '"')
 
 # creates a user object 
 grpcurl -plaintext -d @ localhost:5011 com.daml.ledger.api.v1.CommandService/SubmitAndWait <<EOM
@@ -25,7 +25,7 @@ grpcurl -plaintext -d @ localhost:5011 com.daml.ledger.api.v1.CommandService/Sub
             {
                 "create": {
                     "template_id": {
-                        "package_id" : "544d38add2033b86a0175aa916ea0875e4f62874e2065e5efe8ff25881a71b7e",
+                        "package_id" : "5a8af51473a4f3502f793754099201c34f7573b7b3d7e375483479f6d5082744",
                         "module_name" : "User",
                         "entity_name": "User"
                     },
